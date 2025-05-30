@@ -1,0 +1,12 @@
+public enum EnumTriggerPhase {
+    BEFORE_INSERT,
+    BEFORE_UPDATE,
+    BEFORE_DELETE,
+    AFTER_INSERT,
+    AFTER_UPDATE,
+    AFTER_DELETE,
+    ALL_UPDATE,
+    ALL_INSERT,
+    ALL_DELETE,
+    FINALLY_BLOCK
+}
