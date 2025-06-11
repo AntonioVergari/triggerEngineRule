@@ -2,7 +2,9 @@ public abstract class AbstractBusinessRule implements IBusinessRule {
     protected IBusinessRule nextRule;
 
     public void nextAction() {
-        nextRule.process();
+        if(nextRule != null) {
+            nextRule.process();
+        }
     }
 
     public virtual Boolean shouldExecute() {
