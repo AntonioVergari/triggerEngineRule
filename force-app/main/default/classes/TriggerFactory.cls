@@ -100,7 +100,9 @@ public with sharing class TriggerFactory {
         }
         // Perform any post processing
         if(!lock.isDisabled(EnumTriggerPhase.FINALLY_BLOCK)) {
-            handler.andFinally();
+            RuleEngine.applyRules(
+                handler.andFinally();
+            );
         }
     }
 
