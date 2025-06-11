@@ -14,7 +14,9 @@
     "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "deploy": "sf project deploy start  --source-dir force-app/main/default -c -w 50"
+    "deploy": "sf project deploy start  --source-dir force-app/main/default -c -w 50",
+    "deploy-examples": "sf project deploy start  --source-dir examples/main/default -c -w 50",
+    "deploy-all": "npm run deploy && npm run deploy-examples"
   },
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^1.1.2",
