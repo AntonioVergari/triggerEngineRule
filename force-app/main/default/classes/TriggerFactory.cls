@@ -13,13 +13,19 @@ public with sharing class TriggerFactory {
      * Throws a TriggerException if no handler has been coded.
      */
     public static void createHandler(Schema.sObjectType soType) {
+        String objName = soType.getDescribe().getName();
+        createHandler(objName);
+    }
+
+
+    public static void createHandler(String objName) {
         // Get a handler appropriate to the object being processed
         ITrigger handler = null;
         try {
-            handler = getHandler(soType);
+            handler = getHandler(objName);
         } catch (Exception ex) {
             throw new TriggerException(
-                'No Trigger Handler registered for Object Type: ' + soType
+                'No Trigger Handler registered for Object Type: ' + objName
             );
         }
         execute(handler);
@@ -110,12 +116,12 @@ public with sharing class TriggerFactory {
      * private static method to get the appropriate handler for the object type.
      * Modify this method to add any additional handlers.
      *
-     * Arguments:   Schema.sObjectType soType - Object type tolocate (SObject.sObjectType)
+     * Arguments:   String objName - Object apiname tolocate
      *
      * Returns:     ITrigger - A trigger handler if one exists or null.
      */
-    private static ITrigger getHandler(Schema.sObjectType soType) {
-        triggerName = TriggerUtils.getTriggerName(soType);
+    private static ITrigger getHandler(String objName) {
+        triggerName = TriggerUtils.getTriggerName(objName);
         System.Type objType = Type.forName(triggerName);
         System.debug('objType:' + objType);
         Object obj = objType.newInstance();
