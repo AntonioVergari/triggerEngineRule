@@ -50,23 +50,32 @@ public with sharing class TriggerFactory {
             handler.bulkBefore();
 
             // Iterate through the records to be deleted passing them to the handler.
-            if (Trigger.isDelete && 
-                (!lock.isDisabled(EnumTriggerPhase.BEFORE_UPDATE) || !lock.isDisabled(EnumTriggerPhase.ALL_DELETE))) {
+            if (
+                Trigger.isDelete && 
+                !lock.isDisabled(EnumTriggerPhase.BEFORE_DELETE) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_DELETE)
+            ) {
                 for (SObject so : Trigger.old) {
                     RuleEngine.applyRules(
                         handler.beforeDelete(so)
                     );
                 }
-            } else if (Trigger.isInsert &&
-            (!lock.isDisabled(EnumTriggerPhase.BEFORE_INSERT) || !lock.isDisabled(EnumTriggerPhase.ALL_INSERT))) {
+            } else if (
+                Trigger.isInsert &&
+                !lock.isDisabled(EnumTriggerPhase.BEFORE_INSERT) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_INSERT)
+            ) {
             // Iterate through the records to be inserted passing them to the handler.
                 for (SObject so : Trigger.new) {
                     RuleEngine.applyRules(
                         handler.beforeInsert(so)
                     );
                 }
-            } else if (Trigger.isUpdate && 
-            (!lock.isDisabled(EnumTriggerPhase.BEFORE_UPDATE) || !lock.isDisabled(EnumTriggerPhase.ALL_UPDATE))) {
+            } else if (
+                Trigger.isUpdate && 
+                !lock.isDisabled(EnumTriggerPhase.BEFORE_UPDATE) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_UPDATE)
+            ) {
                 // Iterate through the records to be updated passing them to the handler.
                 for (SObject so : Trigger.old) {
                     RuleEngine.applyRules(
@@ -79,23 +88,32 @@ public with sharing class TriggerFactory {
             handler.bulkAfter();
 
             // Iterate through the records deleted passing them to the handler.
-            if (Trigger.isDelete && 
-                (!lock.isDisabled(EnumTriggerPhase.AFTER_DELETE) || !lock.isDisabled(EnumTriggerPhase.ALL_DELETE))) {
+            if (
+                Trigger.isDelete && 
+                !lock.isDisabled(EnumTriggerPhase.AFTER_DELETE) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_DELETE)
+            ) {
                 for (SObject so : Trigger.old) {
                     RuleEngine.applyRules(
                         handler.afterDelete(so)
                     );
                 }
-            } else if (Trigger.isInsert &&
-                (!lock.isDisabled(EnumTriggerPhase.AFTER_INSERT) || !lock.isDisabled(EnumTriggerPhase.ALL_INSERT))) {
+            } else if (
+                Trigger.isInsert &&
+                !lock.isDisabled(EnumTriggerPhase.AFTER_INSERT) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_INSERT)
+            ) {
                 // Iterate through the records inserted passing them to the handler.
                 for (SObject so : Trigger.new) {
                     RuleEngine.applyRules(
                         handler.afterInsert(so)
                     );
                 }
-            } else if (Trigger.isUpdate &&
-            (!lock.isDisabled(EnumTriggerPhase.AFTER_UPDATE) || !lock.isDisabled(EnumTriggerPhase.ALL_UPDATE))) {
+            } else if (
+                Trigger.isUpdate &&
+                !lock.isDisabled(EnumTriggerPhase.AFTER_UPDATE) &&
+                !lock.isDisabled(EnumTriggerPhase.ALL_UPDATE)
+            ) {
                 // Iterate through the records updated passing them to the handler.
                 for (SObject so : Trigger.old) {
                     RuleEngine.applyRules(
@@ -107,7 +125,7 @@ public with sharing class TriggerFactory {
         // Perform any post processing
         if(!lock.isDisabled(EnumTriggerPhase.FINALLY_BLOCK)) {
             RuleEngine.applyRules(
-                handler.andFinally();
+                handler.andFinally()
             );
         }
     }
