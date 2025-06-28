@@ -82,6 +82,11 @@ Three deployment modes:
 
 - **npm run all**: Deploys both project folders
 
+## TODOS
+- add support for flow actions using BR
+- add metadata to defining action on trigger
+- add examples of BR usage outside of triggers
+
 ## License
 
 Distributed under Apache License 2.0
