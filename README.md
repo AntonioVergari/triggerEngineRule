@@ -1,18 +1,87 @@
-# Salesforce DX Project: Next Steps
+# Salesforce Trigger Engine Rule with Chain of Responsibility
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This Salesforce project implements an Apex trigger following the **Engine Rule** and **Chain of Responsibility** design patterns, providing a modular, scalable, and easily extendible structure for business logic management.
 
-## How Do You Plan to Deploy Your Changes?
+## Key Features
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+- ✅ **Engine Rule Pattern**: Enables definition of modular, reusable rules for event handling.
+- 🔗 **Chain of Responsibility**: Each rule is encapsulated in a separate class and executed sequentially until a condition is met or the chain ends.
+- 🔒 **Trigger Blocking**: The trigger features a dual blocking mechanism:
+    - **Runtime**: Block trigger execution using an Apex class
+    - **Configuration**: Add a Custom Metadata record with the trigger name (always takes priority over runtime settings)
 
-## Configure Your Salesforce DX Project
+## Project Structure
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+The project is organized into two packages:
 
-## Read All About It
+- **force-app**: Contains all metadata and classes implementing the core functionality.
+- **examples**: Contains sample implementation with rules.
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## How It Works
+
+1. Create a trigger and call triggerFactory
+```java
+trigger AccountTrigger on Account (before insert) {
+    triggerFactory.getHandler(Account.getSobjectType());
+}
+```
+
+2. Define a handler for the object implementing ITrigger interface. For Account, the handler must be named AccountHandler
+```java
+public with sharing AccountHandler implements ITrigger {
+    // implements all methods defined in ITrigger interface
+}
+```
+3. Define a Business Rule. Must extend **AbstractBusinessRule** or a child class, define constructor with required data, and implement **shouldExecute** and **execute** methods
+```java
+public with sharing BR_NewRule extends AbstractBusinessRule {
+    private Account newAccount;
+    public BR_NewRule(Account newAccount) {
+        this.newAccount = newAccount;
+        // add next action if current shouldn't execute
+        //this.nextAction = new BR_NextAction(params); 
+    }
+
+    public override Boolean shouldExecute() {
+        return newAccount.Status__c == 'new';
+    }
+
+    public override void execute() {
+        newAccount.Is_Active__c = true;
+        // add more operations or call another BR
+        //new Br_anotherRule(params).process()
+    }
+}
+```
+4. Add the rule in the relevant handler method
+```java
+public List<IBusinessRule> beforeInsert(SObject so) {
+    Account newAccount = (Account) so;
+    List<IBusinessRule> rules = new List<IBusinessRule>();
+    rule.add(new BR_MyRule(newAccount));
+
+    return rule;
+}
+```
+
+## Benefits
+
+- 🔄 Maintainability: Each rule is isolated and easily testable. Avoids complex methods with multiple nested conditionals.
+
+- 📈 Scalability: Add, remove, or reorder rules without modifying triggers.
+
+- 🛠️ Configurability: Enable/disable triggers in production via Custom Metadata.
+
+## Deployment
+
+Three deployment modes:
+
+- **npm run deploy**: Deploys only force-app content
+
+- **npm run deploy-examples**: Deploys examples (fails if force-app isn't deployed)
+
+- **npm run all**: Deploys both project folders
+
+## License
+
+Distributed under Apache License 2.0
