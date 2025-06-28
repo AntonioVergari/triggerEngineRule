@@ -8,5 +8,6 @@ public enum EnumTriggerPhase {
     ALL_UPDATE,
     ALL_INSERT,
     ALL_DELETE,
-    FINALLY_BLOCK
+    FINALLY_BLOCK,
+    ALL
 }

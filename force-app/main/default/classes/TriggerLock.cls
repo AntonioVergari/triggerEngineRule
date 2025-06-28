@@ -1,8 +1,5 @@
 public with sharing class TriggerLock {
     private final Map<EnumTriggerPhase, Phase> phases;
-    private final Boolean triggerGloballyDisabled;
-
-    // Mappatura Enum -> Campo Metadato
     private static final Map<EnumTriggerPhase, String> PHASE_METADATA_MAPPING = new Map<EnumTriggerPhase, String>{
         EnumTriggerPhase.BEFORE_INSERT => 'Disable_Before_Insert__c',
         EnumTriggerPhase.BEFORE_UPDATE => 'Disable_Before_Update__c',
@@ -13,17 +10,16 @@ public with sharing class TriggerLock {
         EnumTriggerPhase.ALL_UPDATE => 'Disable_Update__c',
         EnumTriggerPhase.ALL_DELETE => 'Disable_Delete__c',
         EnumTriggerPhase.ALL_INSERT => 'Disable_Insert__c',
-        EnumTriggerPhase.FINALLY_BLOCK => 'Disable_Finally__c'
+        EnumTriggerPhase.FINALLY_BLOCK => 'Disable_Finally__c',
+        EnumTriggerPhase.ALL => 'Disable_Trigger__c'
     };
 
     public TriggerLock(String triggerName) {
         this.phases = new Map<EnumTriggerPhase, Phase>();
         Trigger_Setting__mdt setting = fetchSettings(triggerName);
-        this.triggerGloballyDisabled = setting?.Disable_Trigger__c == true || false;
         //load metadata config if exists
         for (EnumTriggerPhase phase : PHASE_METADATA_MAPPING.keySet()) {
-            Boolean phaseDisabledByMetadata = triggerGloballyDisabled ||
-                setting != null? 
+            Boolean phaseDisabledByMetadata = setting != null? 
                 (Boolean) setting.get(PHASE_METADATA_MAPPING.get(phase)) :
                 false;
             phases.put(phase, new Phase(phaseDisabledByMetadata));
@@ -31,7 +27,8 @@ public with sharing class TriggerLock {
     }
 
     public Boolean isDisabled(EnumTriggerPhase phase) {
-        return phases.containsKey(phase) && phases.get(phase).isDisabled();
+        return (phases.containsKey(phase) && phases.get(phase).isDisabled()) || 
+        (phases.containsKey(phase) && phases.get(EnumTriggerPhase.ALL).isDisabled());
     }
 
     

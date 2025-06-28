@@ -17,26 +17,33 @@ public with sharing class ZTestTriggerFactory {
         }
     
         Test.stopTest();
-        Assert.areEqual(errorOccured, false, 'No Exception is raised');
-               
+        Assert.areEqual(errorOccured, true, 'No Exception is raised');        
     }
 
+    /** This test will fail if you create an handler on Pricebook2,
+     *  be sure that the object doesn't have an Handler that implements ITrigger inteface
+    **/
     @IsTest
     public static void testGetHandlerError(){
-        
-        
-        String error = null;
+        String errorMessage = null;
         Test.startTest();
 
         try {
             TriggerFactory.createHandler(Pricebook2.getSObjectType());
         } catch (Exception e) {
-            error = e.getMessage();
+            errorMessage = e.getMessage();
         }
         
         Test.stopTest();
-        System.assertNotEquals(null, error,'No error is showed');
-            
+        String objName = Pricebook2.getSObjectType().getDescribe().getName();
+        System.assertNotEquals(null, errorMessage,'No error is showed');
+        System.assertEquals(
+            'No Trigger Handler registered for Object Type: ' + objName,
+            errorMessage,
+            'Invalid error message'
+        );      
     }
+
+
 }
 
