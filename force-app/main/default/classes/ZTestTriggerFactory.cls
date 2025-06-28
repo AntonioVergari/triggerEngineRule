@@ -1,10 +1,11 @@
+@IsTest
 public with sharing class ZTestTriggerFactory {
     @TestSetup
-    static void setup(){
+    public static void setup(){
     }
 
     @IsTest
-    static void testGetHandler(){
+    public static void testGetHandler(){
              
         String error = null;
         Test.startTest();
@@ -12,16 +13,16 @@ public with sharing class ZTestTriggerFactory {
         try {
             TriggerFactory.createHandler(Account.getSObjectType());
         } catch (Exception e) {
-            errorOccured = true
+            errorOccured = true;
         }
     
         Test.stopTest();
-        Assert.areEqual(errorOccured, false, 'No Exception is raised');)
+        Assert.areEqual(errorOccured, false, 'No Exception is raised');
                
     }
 
     @IsTest
-    static void testGetHandlerError(){
+    public static void testGetHandlerError(){
         
         
         String error = null;
