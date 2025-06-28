@@ -1,5 +1,10 @@
 public with sharing class TriggerUtils {
 
+    public Static String getTriggerName(Schema.sObjectType soType ) {
+        String objName = soType.getDescribe().getName();
+        return getTriggerName(objName);
+    }
+
     public static String getTriggerName(String objName) {
         List<String> objParts = objName.split('__');
         String result;
